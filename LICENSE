@@ -1,21 +1,105 @@
-MIT License
+================================================================================
+Pseudo-Entropy Quantum Error Detection — CI/CD Edition
+Dual License: Non-Commercial / Commercial
+================================================================================
 
-Copyright (c) 2025 Assaf Katz
+This software is dual-licensed. You may choose either license depending on
+your intended use.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+------------------------------------------------------------------------
+LICENSE A — NON-COMMERCIAL LICENSE (Free)
+------------------------------------------------------------------------
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any individual or
+non-commercial entity (including academic institutions, non-profit
+organizations, and personal/hobby use) obtaining a copy of this software
+and associated documentation files (the "Software"), to use, copy, modify,
+merge, publish, and distribute the Software for **non-commercial purposes
+only**, subject to the following conditions:
+
+1. The above copyright notice and this license shall be included in all
+   copies or substantial portions of the Software.
+
+2. The Software may not be used for any commercial purpose. "Commercial
+   purpose" means any activity intended to generate revenue, directly or
+   indirectly, including but not limited to:
+     a. Use of the Software in a product or service that is sold,
+        licensed, or otherwise monetized.
+     b. Use of the Software within a for-profit company for internal
+        business operations.
+     c. Use of the Software to provide a paid service or consultancy.
+     d. Incorporation of the Software into a commercial offering.
+
+3. Academic and research use at degree-granting institutions is
+   explicitly permitted under this license, including use in funded
+   research projects, provided the Software itself is not embedded in
+   a commercial product.
+
+4. Modifications and derivative works are permitted, provided they are
+   also distributed under this same non-commercial license and the
+   original copyright notice is preserved.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+------------------------------------------------------------------------
+LICENSE B — COMMERCIAL LICENSE (Requires Payment)
+------------------------------------------------------------------------
+
+For any commercial use as defined in License A, Section 2, a separate
+Commercial License must be obtained from the copyright holder.
+
+Under the Commercial License:
+
+1. Licensee is granted a perpetual, worldwide, non-exclusive right to use,
+   copy, modify, merge, and distribute the Software for commercial purposes.
+
+2. The Commercial License fee must be paid in full before any commercial
+   use begins. Contact the copyright holder for current pricing and to
+   obtain a commercial license key:
+
+     Copyright Holder: Assaf Katz
+     Project:          pseudo-entropy-quantum-error-detection (CI/CD Edition)
+     Repository:       https://github.com/AssafKatz3/pseudo-entropy-quantum-error-detection
+
+3. Once a Commercial License is obtained, the restrictions of License A
+   Section 2 no longer apply to the Licensee.
+
+4. Modifications made under the Commercial License remain the property of
+   the Licensee but the underlying Software retains the original copyright.
+
+5. The Commercial License is granted only to the named Licensee and may not
+   be transferred or sublicensed without prior written consent from the
+   copyright holder, except to contractors acting on behalf of the Licensee.
+
+6. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+------------------------------------------------------------------------
+HOW TO DETERMINE WHICH LICENSE APPLIES TO YOU
+------------------------------------------------------------------------
+
+   •  Are you an individual using this for personal, non-monetized work?
+      → License A (free) applies.
+
+   •  Are you a non-profit organization or charity?
+      → License A (free) applies.
+
+   •  Are you an academic or research institution using this for
+      education or non-commercial research?
+      → License A (free) applies.
+
+   •  Are you a for-profit company, or do you intend to monetize any
+      product or service that incorporates this Software?
+      → You MUST obtain License B (commercial, paid).
+
+If you are uncertain which license applies to your use case, contact the
+copyright holder before using the Software.
+
+------------------------------------------------------------------------
+Copyright (c) 2025 Assaf Katz. All rights reserved.
+------------------------------------------------------------------------

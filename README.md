@@ -1,158 +1,95 @@
-# Introducing Modern Physics Concepts for Enhanced Coherent Error Detection in Quantum Computing
+# Pseudo-Entropy Quantum Error Detection — CI/CD Edition
 
-This repository contains supplementary materials, code, and data for the research paper "Introducing Modern Physics Concepts for Enhanced Coherent Error Detection in Quantum Computing". The work presents a novel, resource-efficient protocol for detecting coherent errors in quantum circuits by leveraging the imaginary component of pseudo-entropy.
-
----
+A CI/CD adaptation of [pseudo-entropy-quantum-error-detection](https://github.com/AssafKatz3/pseudo-entropy-quantum-error-detection).
+Instead of Jupyter notebooks with visualization, this project runs **pseudo-entropy coherent error estimation**
+as automated tests on real IBM Quantum hardware, with strict per-job gate-time budgeting.
 
 ## Project Structure
 
-- **pseudo_entropy.ipynb**: Jupyter notebook containing core code for simulating pseudo-entropy calculation and generating main results, building on hardware-data outputs.  
-- **hardware-data.ipynb**: Jupyter notebook interfacing with IBM Qiskit simulators, generating hardware datasets for noise model calibration used by pseudo_entropy.ipynb.  
-- **requirements.txt**: Python dependencies for running notebooks.  
-- **results/**: Generated figures (including sensitivity maps, phase diagrams) and Excel tables from simulations and analysis.  
-- **hardware/**: Raw/generated hardware data CSVs from Qiskit backend simulations, including qubit properties and optimized groups derived from hardware-data.ipynb.  
-- **data/**: Intermediate and final processed data in Python pickle format facilitating efficient notebook reruns.  
-- **documents/**: LaTeX source files for full thesis text and supplementary materials.
+```
+.
+├── config.yaml                  # All tunable parameters (sweep ranges, budgets, QPU list)
+├── requirements.txt
+├── Jenkinsfile                  # Pipeline: lint → simulator tests → hardware tests → budget check
+├── k8s/
+│   ├── secretstore-ibm-cloud.yaml       # ESO SecretStore (IBM Cloud Secrets Manager)
+│   └── externalsecret-quantum.yaml      # Syncs QISKIT_IBM_TOKEN + ORG_ID into K8s Secret
+├── src/
+│   ├── config.py                # Loads config.yaml as typed dataclasses
+│   ├── hardware_data.py         # Replaces hardware-data.ipynb — real backend qubit data
+│   ├── pseudo_entropy.py        # Replaces pseudo_entropy.ipynb — core math, no plotting
+│   └── qpu/
+│       └── entanglement_error.py  # Pre-submission gate time + entanglement error estimator
+├── scripts/
+│   └── quantum_usage.py         # Post-run per-job gate time budget enforcement
+└── tests/
+    ├── conftest.py
+    ├── test_hardware_data.py    # CI replacement for hardware-data.ipynb
+    └── test_pseudo_entropy.py   # CI replacement for pseudo_entropy.ipynb
+```
 
----
+## Reference and test origins
 
-## Setup and Installation
+The core protocol is based on the companion article and reference notebook for
+pseudo-entropy-based coherent-error detection:
+https://github.com/AssafKatz3/pseudo-entropy-quantum-error-detection
 
-1. **System Requirements:**  
-   * macOS 15.5  
-   * Apple M2 chip  
-   * Python 3.13.5  
+The implementation and tests are grounded in the article's sections on:
+- the circuit construction sequence ("3. Quantum Circuit Visualizations and Sources"),
+- the β/δ sensitivity analysis ("1. Pseudo-Entropy Derivative and Sensitivity Maps"), and
+- the threshold/phase-region interpretation ("2. Phase Diagrams, Model Comparisons, and Segment Analysis").
 
-2. **Clone the repository:**  
-   ```
-   git clone https://github.com/your-repo-name/pseudo-entropy-quantum-error-detection.git
-   cd pseudo-entropy-quantum-error-detection
-   ```
+The simulator tests use simple no-error, sub-threshold, and strong-error cases to
+check that the detector behaves as expected. The hardware tests use the configured
+(β, δ, expect_detected) triples from config.yaml so they mirror the article's
+protocol scenarios on real IBM Quantum backends.
 
-3. **Install Git LFS and pull data:**  
-   ```
-   git lfs install
-   git lfs pull
-   ```
+## Configuration
 
-4. **Virtual environment:**  
-   ```
-   python -m venv venv
-   source venv/bin/activate # Windows: venv\Scripts\activate
-   ```
+All parameters live in `config.yaml`:
 
-5. **Install Python dependencies:**  
-   ```
-   pip install -r requirements.txt
-   ```
+| Section | Key | Description |
+|---|---|---|
+| `sweep` | `beta_points`, `beta_range` | β grid (interaction strength) |
+| `sweep` | `delta_points`, `delta_range` | δ grid (coherent error angle) |
+| `backends` | — | List of IBM QPU names to test |
+| `limits` | `qpu_budget_seconds` | Per-job gate time limit (CI fails if exceeded) |
+| `limits` | `max_entanglement_error` | Preflight entanglement error threshold |
+| `limits` | `job_timeout_seconds` | Max wait for a single IBM job |
+| `limits` | `pipeline_timeout_minutes` | Jenkins pipeline timeout |
+| `detection` | `safety_factor` | threshold = factor × mean(readout_errors) |
+| `hardware_test_cases` | — | (β, δ, expect_detected) triples run on real QPUs |
 
-6. **Run notebooks:**  
-   Launch Jupyter Lab or Notebook:  
-   ```
-   jupyter lab
-   # or
-   jupyter notebook
-   ```  
-   Run `hardware-data.ipynb` first to generate hardware models, then `pseudo_entropy.ipynb` for all analyses and figures.
+## Running Locally
 
----
+```bash
+pip install -r requirements.txt
+export QISKIT_IBM_TOKEN=your_token
+export ORG_ID=your_crn
 
-## Thesis Documents List
+# Simulator tests (no QPU credits)
+pytest tests/ -m "not requires_ibm" -v
 
-| File Path                      | Description                                                                       |
-|-------------------------------|-----------------------------------------------------------------------------------|
-| `documents/master_document.tex` | Primary LaTeX master file controlling build sequence, fonts, languages, numbering |
-| `documents/english_title_page.tex` | Official English thesis title page                                                |
-| `documents/english_acknowledgements.tex` | English acknowledgments section                                         |
-| `documents/english_abstract.tex` | English abstract summarizing thesis                              |
-| `documents/main.tex`            | Main thesis body: introduction, methods, results, discussion                      |
-| `documents/references.bib`      | Bibliography database for citations                                             |
-| `documents/supplementary_content.tex` | Appendix content: supplementary data, proofs, extended results           |
-| `documents/hebrew_abstract.tex`  | Hebrew language abstract                                                         |
-| `documents/hebrew_acknowledgements.tex` | Hebrew acknowledgments                                                       |
-| `documents/hebrew_title_page.tex` | Hebrew thesis title page                                                         |
+# Hardware tests (spends QPU credits)
+pytest tests/ -m "requires_ibm" -v
 
----
+# Gate time budget check
+python scripts/quantum_usage.py --output quantum_usage.json
+```
 
-## Supplementary Figures, Data, and Code Guide
+## Other QPU Architectures
 
-This repository provides all figures, data tables and code supporting the article “Enhanced Coherent Error Detection in Quantum Computing.”  
-All captions include succinct scientific interpretations and explicitly note critical transitions at $ \beta = \pm\pi/2 $.
+This CI/CD edition currently targets **IBM Quantum** backends via Qiskit Runtime.
+Versions supporting other QPU architectures (e.g. AWS Braket / IonQ / Rigetti,
+Google Cirq / Quantum AI, Quantinuum, Azure Quantum) are available on payment
+under the Commercial License — see [LICENSE](./LICENSE) or contact the copyright
+holder for details.
 
-### 1. Pseudo-Entropy Derivative and Sensitivity Maps
+## Pipeline Stages
 
-| Figure (Path)                                                | Description                                                                                                     | Critical Feature                                                  |
-|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| **results/first_derivative_wrt_beta_ds_dbeta.png**          | First derivative $ d\check{S}/d\beta $ showing sensitivity of pseudo-entropy to interaction strength $\beta$.  | Marked peaks at $ \beta = \pm \pi/2 $ indicate quantum transitions.   |
-| **results/first_derivative_wrt_delta_ds_ddelta.png**        | First derivative $ d\check{S}/d\delta $ showing sensitivity to coherent phase error $\delta$.              | Maxima identify phase-sensitive regions crucial for error detection.    |
-| **results/half_second_derivative_wrt_beta2_half_d2s_dbeta2.png**  | Half the second derivative $ \frac{1}{2} d^2\check{S}/d\beta^2 $ indicating curvature in $\beta$.           | Critical boundaries emphasized through pronounced curvature.         |
-| **results/half_second_derivative_wrt_delta2_half_d2s_ddelta2.png** | Half the second derivative $ \frac{1}{2} d^2\check{S}/d\delta^2 $ showing curvature in phase direction.     | Useful for detecting phase transition regions within error regime.     |
-| **results/mixed_second_derivative_d2s_dbeta_ddelta.png**    | Mixed derivative $ d^2\check{S}/d\beta d\delta $ identifying joint parameter sensitivity.                      | Highlights regions of cross-parameter interplay influencing errors.      |
-
-**Additional Variable Sensitivity Details:**
-
-| Figure (Path)                   | Content                       | Notes                                  |
-|--------------------------------|------------------------------|---------------------------------------|
-| **results/sensitivity_d2S_dbeta2.png**       | Curvature $ d^2\check{S}/d\beta^2 $    | Sensitivity in $\beta$ alone         |
-| **results/sensitivity_d2S_dbeta_delta.png** | Cross sensitivity $ d^2\check{S}/d\beta d\delta $ | Joint $\beta$, $\delta$ effects |
-| **results/sensitivity_d2S_ddelta2.png**     | Curvature $ d^2\check{S}/d\delta^2 $    | Sensitivity in $\delta$ alone        |
-| **results/sensitivity_dS_dbeta.png**        | First derivative $ d\check{S}/d\beta $       | Matches full sensitivity overview     |
-| **results/sensitivity_dS_ddelta.png**       | First derivative $ d\check{S}/d\delta $       | Phase-error directional sensitivity   |
-
-***
-
-### 2. Phase Diagrams, Model Comparisons, and Segment Analysis
-
-- **Phase Diagrams:** Located as `results/classical_vs_quantum_regions_thresh_X.png` and `results/continuous_classical_regions_thresh_X.png`. Delineate classical-like vs quantum-like phases, critical boundary annotated at $ \beta = \pm\pi/2 $.
-- **Model vs Simulation Consistency:** Figures such as `results/theory_vs_simulation_cartesian.png` and `results/theory_vs_simulation_polar.png` overlay analytical predictions and simulation results, validating the model’s accuracy.
-- **Segment Analysis:** `results/segments.xlsx` contains data on detection rates and segment boundaries cross-validated with figures and text.
-
-***
-
-### 3. Quantum Circuit Visualizations and Sources
-
-| File | Description | Notes |
-|-|-|-|
-| `results/initial_state_circuit.png` | Diagram for initial state preparation in the pseudo-entropy protocol | Generated from `results/initial_state_circuit.tex` |
-| `results/initial_state_circuit.tex` | LaTeX source for circuit drawing | Editable code source |
-| `results/concatenated_circuit.png` | Full concatenated circuit visualizing repeated blocks | Generated from LaTeX source |
-| `results/concatenated_circuit.tex` | Source code for above | Editable multiple block circuit definition |
-| `results/measurement_circuit.png` | Measurement step quantum circuit diagram | Generated from `results/measurement_circuit.tex` |
-| `results/measurement_circuit.tex` | LaTeX source for measurement circuit | Editable readout operation representation |
-
-***
-
-### 4. Data Tables and Files
-
-| File Path | Description | Purpose |
-|-|-|-|
-| `additional-info/comparative_methods.xlsx` | Detailed benchmarking data for error detection methods | Section supporting protocol resource and sensitivity claims |
-| `additional-info/numerical_instability_parameters.xlsx` | Parameters causing numerical instability in pseudo-entropy | Defines operational protocol boundaries |
-| `additional-info/Modern_Physics_Coherent_Error_Detection_Presentation.pptx` | Summary slides of research findings | Outreach and presentation support |
-| `results/segments.xlsx` | Segment boundaries and detection rates for thresholds | Validates region and threshold claims |
-| `results/fit_results.xlsx` | Parameter estimation data for fitted models | Supports statistical comparison in thesis tables |
-| `results/statistics_results.xlsx` | Statistical descriptors of pseudo-entropy distribution | Supplemental quantitative insights |
-| `results/sensitivity_results.xlsx` | Sensitivity metrics underlying derivative maps | Core numerical data for robustness analysis |
-| `hardware/hardware.csv` | Simulated qubit properties and error rates from IBM backends | Basis for noise modeling and calibration |
-| `hardware/optimal_qubit_groups.csv` | Optimized qubit grouping configurations | Backend-specific qubit quality optimization |
-
-***
-
-### 5. Reproducibility and Codebase Summary
-
-- **pseudo_entropy.ipynb:** The full simulation and analysis notebook generating all numerical results and figures.  
-- **hardware-data.ipynb:** Interfaces with IBM Qiskit simulators, extracting hardware noise and calibration models to feed into the main analysis.  
-
-***
-### 6. Quick Reference: Figure and Data Themes
-
--   **All sensitivity/gradient maps:** β = ±π/2 is the critical transition, always noted.
--   **Phase diagrams / threshold regions:** Explicitly show sub- and super-threshold behavior, with transitions matching theoretical predictions.
--   **Circuit diagrams:** All protocol steps are visualized with both image and editable LaTeX source.
--   **Data tables:** Complete numerical support for all claims depicted.
-
-
-## Git Large File Storage (LFS)
-
-Large data and images are stored using Git LFS to ensure efficient cloning and version management without bloating repository size.
-
+1. **Checkout** — pull source
+2. **Install Dependencies** — `pip install -r requirements.txt`
+3. **Lint** — flake8 + black
+4. **Test (Simulator)** — always runs, no QPU credits
+5. **Test (IBM Quantum Hardware)** — runs on `main` branch or tags only
+6. **Quantum Gate Time Budget** — fails build if any job exceeds `qpu_budget_seconds`

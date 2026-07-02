@@ -1,0 +1,28 @@
+# ── Sweep parameters (from pseudo_entropy.ipynb Section 1.3) ─────────────────
+sweep:
+  beta_points: 1601          # must be odd (symmetric around zero)
+  beta_range: 3.14159265     # π
+  delta_points: 401          # must be odd
+  delta_range: 0.02454369    # π/128
+
+# ── QPU targets ───────────────────────────────────────────────────────────────
+backends:
+  - ibm_brisbane
+  - ibm_kyoto
+  - ibm_sherbrooke
+
+# ── Budget & timeout ─────────────────────────────────────────────────────────
+limits:
+  qpu_budget_seconds: 1.0        # per-job gate time limit → CI fails if exceeded
+  max_entanglement_error: 0.05   # preflight threshold
+  job_timeout_seconds: 300       # max wait for a single IBM job result
+  pipeline_timeout_minutes: 120  # Jenkins pipeline-level timeout
+
+# ── Detection threshold ───────────────────────────────────────────────────────
+detection:
+  safety_factor: 2.0   # threshold = safety_factor × mean(readout_errors)
+
+# ── Test cases run on real hardware ──────────────────────────────────────────
+hardware_test_cases:
+  - { beta: 0.5, delta: 0.0,  expect_detected: false }   # clean circuit
+  - { beta: 0.5, delta: 0.3,  expect_detected: true  }   # moderate coherent error
