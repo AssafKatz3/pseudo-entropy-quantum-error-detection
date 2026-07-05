@@ -1,5 +1,7 @@
 # Pre-Merge Checklist — Production Readiness
 
+Last updated: 2026-07-05 — checklist added to branch; hardware validation pending.
+
 This checklist must be completed **before merging** the
 `draft/production-readiness-docs` branch into `main`.
 
