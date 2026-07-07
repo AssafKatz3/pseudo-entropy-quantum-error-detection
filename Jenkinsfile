@@ -126,6 +126,32 @@ spec:
             }
         }
 
+        stage('Resolve Configured Backends') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                    expression { env.RUN_HARDWARE_TESTS == 'true' }
+                }
+            }
+            steps {
+                container('python') {
+                    sh '''
+                        python - <<'PY'
+import sys
+try:
+    from src.config import resolve_cfg_backends
+    active = resolve_cfg_backends()
+    print('Resolved active backends:', active)
+except Exception as e:
+    print('ERROR: failed to resolve configured backends:', e, file=sys.stderr)
+    sys.exit(2)
+PY
+                    '''
+                }
+            }
+        }
+
         stage('Test (IBM Quantum Hardware)') {
             when {
                 anyOf {

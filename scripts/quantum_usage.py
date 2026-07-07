@@ -143,7 +143,7 @@ def main():
             f"used {v['gate_time_seconds']:.6f}s  > {args.budget}s budget"
         )
     else:
-        print(f"\n  ✅ All jobs within budget.")
+        print("\n  ✅ All jobs within budget.")
     print("══════════════════════════════════════════════\n")
 
     if report["budget_exceeded"]:

@@ -7,9 +7,9 @@ sweep:
 
 # ── QPU targets ───────────────────────────────────────────────────────────────
 backends:
-  - ibm_brisbane
-  - ibm_kyoto
-  - ibm_sherbrooke
+  - ibm_kingston
+  - ibm_fez
+  - ibm_marrakesh
 
 # ── Budget & timeout ─────────────────────────────────────────────────────────
 limits:

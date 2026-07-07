@@ -62,3 +62,41 @@ def _load() -> AppConfig:
     )
 
 cfg: AppConfig = _load()
+
+
+def get_active_backends(candidates: list[str], min_qubits: int = 5) -> list[str]:
+    """Filter a list of candidate backend names down to those actually live right now.
+
+    This performs a live query against the IBM Quantum service. It will raise a
+    RuntimeError if the Qiskit IBM Runtime SDK is not available, if credentials
+    are missing, or if none of the configured backends are currently operational.
+    """
+    try:
+        from qiskit_ibm_runtime import QiskitRuntimeService
+    except Exception as exc:  # ImportError or other runtime problems
+        raise RuntimeError(
+            "qiskit_ibm_runtime is required to resolve live backends: "
+            + str(exc)
+        )
+
+    service = QiskitRuntimeService()
+    live = {
+        b.name
+        for b in service.backends(operational=True, simulator=False, min_num_qubits=min_qubits)
+    }
+    active = [name for name in candidates if name in live]
+    if not active:
+        raise RuntimeError(
+            f"None of the configured backends {candidates} are currently active. "
+            f"Live options: {sorted(live)}"
+        )
+    return active
+
+
+def resolve_cfg_backends(min_qubits: int = 5) -> list[str]:
+    """Resolve the backends listed in the loaded config to the currently active set.
+
+    Callers (for example the Jenkins hardware-test stage) should call this
+    early and fail fast if no configured backend is live.
+    """
+    return get_active_backends(cfg.backends, min_qubits=min_qubits)

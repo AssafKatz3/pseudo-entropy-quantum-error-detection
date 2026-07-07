@@ -30,8 +30,8 @@ hardware suite has been run and the budget report is green.
 
 ## 3. Hardware Test Run ⚠️ (spends QPU credits)
 
-Run against real backends defined in `config.yaml` (ibm_brisbane,
-ibm_kyoto, ibm_sherbrooke).
+Run against real backends defined in `config.yaml` (ibm_kingston,
+ibm_fez, ibm_marrakesh).
 
 - [ ] Run locally first (faster feedback, controlled cost):
       ```bash

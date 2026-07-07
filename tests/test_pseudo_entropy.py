@@ -11,7 +11,6 @@ Parameterization over backend types is used to track gate time per job.
 import pytest
 
 from src.config import cfg
-from src.hardware_data import extract_hardware_data
 from src.pseudo_entropy import (
     compute_detection_threshold,
     estimate_coherent_error,
