@@ -136,18 +136,7 @@ spec:
             }
             steps {
                 container('python') {
-                    sh '''
-                        python - <<'PY'
-import sys
-try:
-    from src.config import resolve_cfg_backends
-    active = resolve_cfg_backends()
-    print('Resolved active backends:', active)
-except Exception as e:
-    print('ERROR: failed to resolve configured backends:', e, file=sys.stderr)
-    sys.exit(2)
-PY
-                    '''
+                    sh 'python scripts/check_backends.py'
                 }
             }
         }
